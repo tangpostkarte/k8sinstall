@@ -1,4 +1,4 @@
 - hosts: k8s
   remote_user: root
   roles:
-    - k8sinstall
+    - install_containerd
