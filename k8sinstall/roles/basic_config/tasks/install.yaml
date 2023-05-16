@@ -1,0 +1,41 @@
+---
+- name: add hosts
+  lineinfile:
+    path: /etc/hosts
+    line: "{{ item }}"
+    with_items: "{{ hosts }}"
+- name: disable swap
+  command: swapoff -a
+  when: ansible_swaptotal_mb > 0
+- name: modify swap config
+  lineinfile:
+    path: /etc/fstab
+    regexp: '^(.*swap.*$)'
+    replace: '#\1'
+  when: ansible_swaptotal_mb > 0
+- name: disable firewalld
+  service:
+    name: firewalld
+    state: stopped
+    enabled: no
+- name: disable selinux
+  selinux:
+    state: disabled
+- name: copy module config
+  copy:
+    src: k8s-mod.conf
+    dest: /etc/modules-load.d/k8s.conf
+    remote_src: no
+- name: load module
+  modprobe:
+    name: '{{ item }}'
+    with_items:
+      - br_netfilter
+      - overlay
+- name: copy sysctl config
+  copy:
+    src: k8s-sysctl.conf
+    dest: /etc/sysctl.d/k8s.conf
+    remote_src: no
+  notify:
+    - reload module

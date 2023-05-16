@@ -1,4 +1,5 @@
 - hosts: k8s
   remote_user: root
   roles:
+    - basic_config
     - install_containerd
