@@ -24,5 +24,10 @@
     src: containerd.service
     dest: /etc/systemd/system/containerd.service
     remote_src: no
-  notify: 
-     - restart containerd
+- name: daemon reload
+  command: systemctl daemon-reload
+- name: restart containerd
+  systemd:
+    name: containerd
+    state: restarted
+    daemon_reload: yes

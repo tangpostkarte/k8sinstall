@@ -1,6 +1,37 @@
 ---
-- name: copy k8s init file
-  template:
-    src: k8s-init.config.j2
-    dest: /tmp
-  notify: k8s init
+# - name: copy k8s init file
+#   template:
+#     src: k8s-init.config.j2
+#     dest: /tmp/k8s-init.config
+# - name: k8s init
+#   command: kubeadm init --config /tmp/k8s-init.config
+#   when: ansible_hostname == 'master'
+# - name: touch .kube directory
+#   file:
+#     path: /root/.kube
+#     state: directory
+#     mode: 0755
+#   when: ansible_hostname == 'master'
+# - name: copy admin.conf
+#   copy:
+#     src: /etc/kubernetes/admin.conf
+#     dest: /root/.kube/config
+#     remote_src: yes
+#   when: ansible_hostname == 'master'
+# - name: chown admin.conf
+#   command: chown root:root /root/.kube/config
+#   when: ansible_hostname == 'master'
+- name: print k8s join command
+  command: kubeadm token create --print-join-command
+  register: join_command
+  when: ansible_hostname == 'master'
+- debug:
+    var: join_command
+  when: ansible_hostname == 'master'
+- name: set k8s join command
+  set_fact:
+    join: "{{ join_command.stdout }}"
+  when: ansible_hostname == 'master'
+- name: join master
+  command: '{{  hostvars["master"].join }}'
+  when: ansible_hostname != 'master'

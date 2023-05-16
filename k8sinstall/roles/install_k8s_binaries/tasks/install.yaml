@@ -1,0 +1,20 @@
+---
+- name: copy kubernetes.repo
+  copy:
+    src: kubernetes.repo
+    dest: /etc/yum.repos.d/kubernetes.repo
+    owner: root
+    group: root
+    mode: 0644
+  notify:
+    - repo cache
+- name: install k8s package
+  yum:
+    name: "{{ k8s_binaries }}"
+    state: present
+    use_backend: dnf
+- name: start kubelet
+  service:
+    name: kubelet
+    state: started
+    enabled: yes

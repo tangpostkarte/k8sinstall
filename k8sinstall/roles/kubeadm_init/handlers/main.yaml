@@ -1,3 +1,1 @@
----
-- name: k8s init
-  command: kubeadm init --config /tmp/k8s-init-config
+

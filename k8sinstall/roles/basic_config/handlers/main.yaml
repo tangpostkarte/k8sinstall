@@ -1,3 +1,10 @@
 ---
 - name: reload sysctl config
   command: sysctl --system
+- name: repo cache
+  command: yum makecache
+- name: load ipvs module
+  systemd:
+    name: systemd-modules-load
+    state: restarted
+    daemon_reload: yes

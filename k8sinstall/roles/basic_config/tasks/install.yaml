@@ -3,16 +3,35 @@
   lineinfile:
     path: /etc/hosts
     line: "{{ item }}"
-    with_items: "{{ hosts }}"
+  with_items: "{{ k8s_hosts }}"
 - name: disable swap
   command: swapoff -a
   when: ansible_swaptotal_mb > 0
 - name: modify swap config
-  lineinfile:
+  replace:
     path: /etc/fstab
     regexp: '^(.*swap.*$)'
     replace: '#\1'
   when: ansible_swaptotal_mb > 0
+# - name: use ali rocky8 repo
+#   command: sed -e 's|^mirrorlist=|#mirrorlist=|g' \
+#     -e 's|^#baseurl=http://dl.rockylinux.org/$contentdir|baseurl=https://mirrors.ustc.edu.cn/rocky|g' \
+#     -i.bak \
+#     /etc/yum.repos.d/Rocky-AppStream.repo \
+#     /etc/yum.repos.d/Rocky-BaseOS.repo \
+#     /etc/yum.repos.d/Rocky-Extras.repo \
+#     /etc/yum.repos.d/Rocky-PowerTools.repo
+#   when: ansible_distribution == 'Rocky' and ansible_distribution_major_version == '8'
+  # notify:
+  #   - repo cache
+- name: use ali rocky9 repo
+  command: "sed -e 's|^mirrorlist=|#mirrorlist=|g' \
+    -e 's|^#baseurl=http://dl.rockylinux.org/$contentdir|baseurl=https://mirrors.ustc.edu.cn/rocky|g' \
+    -i.bak \
+    /etc/yum.repos.d/rocky-extras.repo \
+    /etc/yum.repos.d/rocky.repo"
+  notify:
+    - repo cache
 - name: disable firewalld
   service:
     name: firewalld
@@ -29,13 +48,25 @@
 - name: load module
   modprobe:
     name: '{{ item }}'
-    with_items:
+  with_items:
       - br_netfilter
       - overlay
+- name: install ipvs related packages
+  yum:
+    name: "{{ ipvs_packages }}"
+    state: present
+    use_backend: dnf
+- name: copy ipvs conf
+  copy:
+    src: ipvs.conf
+    dest: /etc/modules-load.d/ipvs.conf
+    remote_src: no
+  notify:
+    - load ipvs module
 - name: copy sysctl config
   copy:
     src: k8s-sysctl.conf
     dest: /etc/sysctl.d/k8s.conf
     remote_src: no
-  notify:
-    - reload module
+- name: reload sysctl config
+  command: sysctl --system
