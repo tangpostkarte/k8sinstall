@@ -1,0 +1,5 @@
+advertiseAddress: 172.16.21.135
+bindPort: 6443
+kubernetesVersion: 1.27.1
+serviceSubnet: "10.96.0.0/12"
+podSubnet: "10.244.0.0/16"

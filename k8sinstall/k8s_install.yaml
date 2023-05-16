@@ -3,3 +3,5 @@
   roles:
     - basic_config
     - install_containerd
+    - install_runc
+    - install_cni_plugin

@@ -1,0 +1,7 @@
+---
+- name: copy runc
+  copy:
+    src: runc-{{ runc_version }}.amd64
+    dest: /usr/local/sbin/runc
+    mode: 755
+    remote_src: no

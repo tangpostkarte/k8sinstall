@@ -1,0 +1,6 @@
+---
+- name: copy k8s init file
+  template:
+    src: k8s-init.config.j2
+    dest: /tmp
+  notify: k8s init
