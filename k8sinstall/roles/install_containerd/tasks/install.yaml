@@ -1,0 +1,21 @@
+---
+- name: copy containerd
+  copy: 
+    src: containerd-{{ containerd_version }}.linux-amd64.tar.gz
+    dest: /tmp/containerd-{{ containerd_version }}.linux-amd64.tar.gz
+    remote_src: no  # no 为将本地文件复制到远程主机
+- name: unarchive containerd
+  unarchive: 
+    src: /tmp/containerd-{{ containerd_version }}.linux-amd64.tar.gz
+    dest: /usr/local
+    remote_src: yes # yes为解压远程主机上的文件
+- name: create containerd config directory 
+  file:
+    path: /etc/containerd
+    state: directory
+    mode: 0755
+- name: copy containerd config
+  copy:
+    src: config.toml
+    dest: /etc/containerd/config.toml
+    remote_src: no
