@@ -4,7 +4,7 @@
     path: /opt/cni/bin
     state: directory
 
-- name: unarchive cni_plugins
+- name: unarchive cni_plugins  # 将cni插件解压到指定的目录
   unarchive:
     src: cni-plugins-linux-amd64-{{ cni_plugin_version }}.tgz
     dest: /opt/cni/bin

@@ -1,14 +1,14 @@
 ---
-- name: add hosts
-  lineinfile:
+- name: add hosts  # 添加主机到hosts
+  lineinfile:  # 使用lineinfile模块往文件中写入内容
     path: /etc/hosts
     line: "{{ item }}"
-  with_items: "{{ k8s_hosts }}"
-- name: disable swap
+  with_items: "{{ k8s_hosts }}"  # 从defaults中的main.yaml获取变量用于上面的item迭代
+- name: disable swap # 关闭swap
   command: swapoff -a
-  when: ansible_swaptotal_mb > 0
+  when: ansible_swaptotal_mb > 0  # 当swap的空间大于0时候执行这个task
 - name: modify swap config
-  replace:
+  replace:      # 将swap关闭写入文件中
     path: /etc/fstab
     regexp: '^(.*swap.*$)'
     replace: '#\1'
@@ -24,20 +24,20 @@
 #   when: ansible_distribution == 'Rocky' and ansible_distribution_major_version == '8'
   # notify:
   #   - repo cache
-- name: use ali rocky9 repo
+- name: use ali rocky9 repo  # 切换yum源
   command: "sed -e 's|^mirrorlist=|#mirrorlist=|g' \
     -e 's|^#baseurl=http://dl.rockylinux.org/$contentdir|baseurl=https://mirrors.ustc.edu.cn/rocky|g' \
     -i.bak \
     /etc/yum.repos.d/rocky-extras.repo \
     /etc/yum.repos.d/rocky.repo"
-  notify:
+  notify:  # 当上面的命令执行成功的时候执行handlers中的这个task，即重新下载缓存
     - repo cache
-- name: disable firewalld
+- name: disable firewalld  # 关闭防火墙
   service:
     name: firewalld
     state: stopped
     enabled: no
-- name: disable selinux
+- name: disable selinux  # 关闭selinux
   selinux:
     state: disabled
 - name: copy module config
@@ -45,14 +45,14 @@
     src: k8s-mod.conf
     dest: /etc/modules-load.d/k8s.conf
     remote_src: no
-- name: load module
+- name: load module  # 加载模块
   modprobe:
     name: '{{ item }}'
   with_items:
       - br_netfilter
       - overlay
 - name: install ipvs related packages
-  yum:
+  yum:  # 安装ipvs相关的包，使用yum模块
     name: "{{ ipvs_packages }}"
     state: present
     use_backend: dnf

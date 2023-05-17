@@ -3,7 +3,7 @@
   copy:
     src: kube-flannel.yaml
     dest: /tmp/kube-flannel.yaml
-  when: ansible_hostname == 'master'
-- name: init flannel
+  when: ansible_hostname == 'master'  
+- name: init flannel 
   command: kubectl apply -f /tmp/kube-flannel.yaml
-  when: ansible_hostname == 'master'
+  when: ansible_hostname == 'master' # 只有主机名为master时候才执行flannel

@@ -1,28 +1,28 @@
 ---
-# - name: copy k8s init file
-#   template:
-#     src: k8s-init.config.j2
-#     dest: /tmp/k8s-init.config
-# - name: k8s init
-#   command: kubeadm init --config /tmp/k8s-init.config
-#   when: ansible_hostname == 'master'
-# - name: touch .kube directory
-#   file:
-#     path: /root/.kube
-#     state: directory
-#     mode: 0755
-#   when: ansible_hostname == 'master'
-# - name: copy admin.conf
-#   copy:
-#     src: /etc/kubernetes/admin.conf
-#     dest: /root/.kube/config
-#     remote_src: yes
-#   when: ansible_hostname == 'master'
-# - name: chown admin.conf
-#   command: chown root:root /root/.kube/config
-#   when: ansible_hostname == 'master'
+- name: copy k8s init file
+  template:  # 使用jinja2模板
+    src: k8s-init.config.j2
+    dest: /tmp/k8s-init.config
+- name: k8s init
+  command: kubeadm init --config /tmp/k8s-init.config  # 初始化ks
+  when: ansible_hostname == 'master'
+- name: touch .kube directory
+  file:
+    path: /root/.kube
+    state: directory
+    mode: 0755
+  when: ansible_hostname == 'master'
+- name: copy admin.conf
+  copy:
+    src: /etc/kubernetes/admin.conf
+    dest: /root/.kube/config
+    remote_src: yes
+  when: ansible_hostname == 'master'
+- name: chown admin.conf
+  command: chown root:root /root/.kube/config
+  when: ansible_hostname == 'master'
 - name: print k8s join command
-  command: kubeadm token create --print-join-command
+  command: kubeadm token create --print-join-command  # 打印k8s加入相关的命令
   register: join_command
   when: ansible_hostname == 'master'
 - debug:
@@ -33,5 +33,5 @@
     join: "{{ join_command.stdout }}"
   when: ansible_hostname == 'master'
 - name: join master
-  command: '{{  hostvars["master"].join }}'
+  command: '{{  hostvars["master"].join }}'  # 从master主机获取打印出的命令在数据层面执行
   when: ansible_hostname != 'master'

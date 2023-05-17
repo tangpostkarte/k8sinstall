@@ -4,7 +4,7 @@
 - name: repo cache
   command: yum makecache
 - name: load ipvs module
-  systemd:
+  systemd:    # 使用systemd模块重启服务
     name: systemd-modules-load
     state: restarted
     daemon_reload: yes

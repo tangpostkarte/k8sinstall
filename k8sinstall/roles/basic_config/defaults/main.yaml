@@ -1,7 +1,7 @@
-k8s_hosts:
+k8s_hosts:  # 下面的变量是写入到主机hosts的变量
   - 172.16.195.129 master 
   - 172.16.195.128 node1 
-ipvs_packages:
+ipvs_packages:  # 安装ipvs相关的包
  - ipvsadm
  - ipset
  - sysstat

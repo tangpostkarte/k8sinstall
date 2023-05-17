@@ -1,2 +1,2 @@
 ---
-- import_tasks: install.yaml
+- import_tasks: install.yaml  # 导入task

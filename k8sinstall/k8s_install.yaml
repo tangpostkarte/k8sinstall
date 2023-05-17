@@ -1,10 +1,10 @@
 - hosts: k8s
   remote_user: root
   roles:
-    # - basic_config
-    # - install_containerd
-    # - install_runc
-    # - install_cni_plugin
-    # - install_k8s_binaries
+    - basic_config
+    - install_containerd
+    - install_runc
+    - install_cni_plugin
+    - install_k8s_binaries
     - kubeadm_init
-    # - install_flannel
+    - install_flannel

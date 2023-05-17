@@ -14,7 +14,7 @@
     state: present
     use_backend: dnf
 - name: start kubelet
-  service:
+  service:  # 使用service模块启动kubelet
     name: kubelet
     state: started
-    enabled: yes
+    enabled: yes  # 是否开机启动
